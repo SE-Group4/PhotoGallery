@@ -6,6 +6,8 @@
     <string name="snap_button">Snap</string>
     <string name="caption_button">Caption</string>
     <string name="search_button">Search</string>
+    <string name="left_button">Left</string>
+    <string name="right_button">Right</string>
 
     <!-- Search Page -->
     <string name="keyword_search_text">Keyword:</string>
