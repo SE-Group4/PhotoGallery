@@ -1,5 +1,26 @@
 <resources>
-    <string name="app_name">PhotoGallery</string>
+    <!-- Global -->
+    <string name="app_name">Photo Gallery</string>
+
+    <!-- Main Page -->
+    <string name="snap_button">Snap</string>
+    <string name="caption_button">Caption</string>
+    <string name="search_button">Search</string>
+    <string name="left_button">Left</string>
+    <string name="right_button">Right</string>
+
+    <!-- Search Page -->
+    <string name="keyword_search_text">Keyword:</string>
+    <string name="date_from_text">Date From:</string>
+    <string name="date_to_text">Date To:</string>
+    <string name="top_left_lat_text">Top Left Latitude:</string>
+    <string name="top_left_long_text">Top Left Longitude:</string>
+    <string name="bottom_right_lat_text">Bottom Right Latitude:</string>
+    <string name="bottom_right_long_text">Bottom Right Longitude:</string>
+
+    <string name="apply_search_button">Apply Search</string>
+    <string name="search_clear_button">Clear</string>
+    <string name="search_cancel_button">Cancel</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
