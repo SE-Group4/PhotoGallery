@@ -17,17 +17,7 @@
     <string name="top_left_long_text">Top Left Longitude:</string>
     <string name="bottom_right_lat_text">Bottom Right Latitude:</string>
     <string name="bottom_right_long_text">Bottom Right Longitude:</string>
-
     <string name="apply_search_button">Apply Search</string>
     <string name="search_clear_button">Clear</string>
     <string name="search_cancel_button">Cancel</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>
