@@ -11,16 +11,26 @@ import androidx.core.content.ContextCompat;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
     public static final int SEARCH_REQUEST = 0;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    private ImageAdapter imageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // request permission to store pictures
         requestStoragePermission();
+
+        // display image gallery
+        GridView gv = (GridView) findViewById(R.id.gridView);
+        imageAdapter = new ImageAdapter(this);
+        gv.setAdapter(imageAdapter);
 
         // take picture
         Button snapButton = (Button) findViewById(R.id.btnSnap);
@@ -39,6 +49,23 @@ public class MainActivity extends AppCompatActivity {
                 openSearchActivity(v);
             }
         });
+    }
+
+    // update image list on resume of Main Activity
+    @Override
+    public void onResume(){
+        super.onResume();
+        imageAdapter.updateImages();
+        imageAdapter.notifyDataSetChanged();
+    }
+
+    // update image list on result of Main Activity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        imageAdapter.updateImages();
+        imageAdapter.notifyDataSetChanged();
     }
 
     /* helper methods */

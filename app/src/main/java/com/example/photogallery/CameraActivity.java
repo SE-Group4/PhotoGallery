@@ -3,12 +3,10 @@ package com.example.photogallery;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CameraActivity extends AppCompatActivity {
-    private ImageView img;
     private File newPhoto;
     static final int REQUEST_TAKE_PHOTO = 1;
 
@@ -26,22 +23,12 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
-         img = (ImageView) findViewById(R.id.img);
-
     }
 
-    // retrieves the image
+    // deletes image if user canceled the action
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("CHECK", Integer.toString(resultCode));
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            img.setImageBitmap(imageBitmap);
-        }
-
         if (resultCode == RESULT_CANCELED){
             newPhoto.delete();
         }
@@ -62,7 +49,7 @@ public class CameraActivity extends AppCompatActivity {
             // get a URI for the file based on authority of app's own fileprovider
             Uri photoURI = FileProvider.getUriForFile(this, "com.example.photogallery.fileprovider", newPhoto);
 
-            // takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI); // FIXME: uncomment when saving images. NOTE: sets Bitmap data to null
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI); // FIXME: uncomment when saving images. NOTE: sets Bitmap data to null
             startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
         }
     }
