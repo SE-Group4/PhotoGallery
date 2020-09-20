@@ -60,6 +60,8 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     // private helper methods
+
+    // get list of images from downloads directory
     private File[] listImages() {
       File directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
       return directory.listFiles();

@@ -21,7 +21,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity" />
-        <activity android:name=".CameraActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.photogallery.fileprovider"
