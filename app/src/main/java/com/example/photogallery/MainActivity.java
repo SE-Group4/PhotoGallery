@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     final ExifInterface ei = new ExifInterface(imgPath);
                     Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
-                    i.putExtra("clickedImageTimestamp", ei.getAttribute(ExifInterface.TAG_DATETIME));
+                    i.putExtra("clickedImageTimestamp", "Timestamp: " + ei.getAttribute(ExifInterface.TAG_DATETIME));
                     i.putExtra("clickedImagePath", imgPath);
                     startActivity(i);
                 } catch (IOException ex) {
