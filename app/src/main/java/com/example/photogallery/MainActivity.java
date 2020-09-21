@@ -2,6 +2,7 @@ package com.example.photogallery;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.content.Intent;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 
@@ -37,9 +39,28 @@ public class MainActivity extends AppCompatActivity {
         requestStoragePermission();
 
         // display image gallery
-        GridView gv = (GridView) findViewById(R.id.gridView);
+        final GridView gv = (GridView) findViewById(R.id.gridView);
         imageAdapter = new ImageAdapter(this);
         gv.setAdapter(imageAdapter);
+
+        // open photo preview on Grid View item click
+        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int positon, long id) {
+                File img = (File) gv.getAdapter().getItem(positon);
+                
+                // pass image link to the intent and start Photo Preview activity
+                String imgPath = (String) img.getAbsolutePath();
+                try {
+                    final ExifInterface ei = new ExifInterface(imgPath);
+                    Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
+                    i.putExtra("clickedImageTimestamp", "Timestamp: " + ei.getAttribute(ExifInterface.TAG_DATETIME));
+                    i.putExtra("clickedImagePath", imgPath);
+                    startActivity(i);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
 
         // open search window
         Button searchButton = (Button) findViewById(R.id.btnSearch);
@@ -61,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
     // update image list on result of Main Activity
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data ){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data ) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_CANCELED){
+        if (resultCode == RESULT_CANCELED) {
             newPhoto.delete();
         }
 
@@ -81,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     // request permission to store images
     private void requestStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // temporary fix to prevent crash if current Android version lower than required SDK
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
