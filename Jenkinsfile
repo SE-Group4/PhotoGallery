@@ -6,15 +6,10 @@ pipeline {
 
   }
   stages {
-    stage('Build') {
-      steps {
-        sh './gradlew compileDebugSources'
-      }
-    }
-
     stage('Test') {
       steps {
-        sh './gradlew testDebugUnitTest testDebugUnitTest'
+        sh '''./gradlew clean assembleDebug
+test'''
       }
     }
 
