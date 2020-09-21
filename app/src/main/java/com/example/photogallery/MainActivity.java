@@ -2,6 +2,7 @@ package com.example.photogallery;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,17 +42,23 @@ public class MainActivity extends AppCompatActivity {
         final GridView gv = (GridView) findViewById(R.id.gridView);
         imageAdapter = new ImageAdapter(this);
         gv.setAdapter(imageAdapter);
+
         // open photo preview on Grid View item click
-        Intent i = new Intent(this, PhotoPreviewActivity.class);
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int positon, long id) {
                 File img = (File) gv.getAdapter().getItem(positon);
-
+                
                 // pass image link to the intent and start Photo Preview activity
                 String imgPath = (String) img.getAbsolutePath();
-                Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
-                i.putExtra("ClickedImagePath", imgPath);
-                startActivity(i);
+                try {
+                    final ExifInterface ei = new ExifInterface(imgPath);
+                    Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
+                    i.putExtra("clickedImageTimestamp", ei.getAttribute(ExifInterface.TAG_DATETIME));
+                    i.putExtra("clickedImagePath", imgPath);
+                    startActivity(i);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 

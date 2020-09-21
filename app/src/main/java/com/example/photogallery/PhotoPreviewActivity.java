@@ -1,9 +1,11 @@
 package com.example.photogallery;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,7 +17,8 @@ public class PhotoPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_preview);
 
-        String imagePath = getIntent().getStringExtra("ClickedImagePath");
+        Intent i = getIntent();
+        String imagePath = i.getStringExtra("clickedImagePath");
         if (imagePath != null && !imagePath.isEmpty()) {
             File imgFile = new File(imagePath);
 
@@ -24,6 +27,8 @@ public class PhotoPreviewActivity extends AppCompatActivity {
                 Bitmap b = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                 ImageView img = (ImageView) findViewById(R.id.preview_image);
                 img.setImageBitmap(b);
+                TextView imgText = (TextView) findViewById((R.id.preview_image_text));
+                imgText.setText(i.getStringExtra("clickedImageTimestamp"));
             }
 
         }
