@@ -4,24 +4,25 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:layout_weight="1"
-    android:orientation="vertical" >
+    android:onClick="scrollPhotos"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/preview_image_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_alignLeft="@+id/preview_image"
+        android:layout_alignStart="@+id/preview_image"
+        android:layout_alignEnd="@+id/preview_image"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/preview_image"
+        android:layout_marginBottom="200dp"
+        android:gravity="center"
         android:lines="2"
         android:scrollHorizontally="false"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearance"
         android:textColor="@android:color/black"
         android:textColorLink="@android:color/white"
-        android:textStyle="bold"
-        android:layout_marginBottom="200dp" />
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/preview_image"
@@ -30,7 +31,42 @@
         android:layout_above="@+id/preview_image_text"
         android:layout_centerHorizontal="true"
         android:layout_margin="2dp"
-        android:adjustViewBounds="true"
-        />
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:adjustViewBounds="true" />
+
+    <Button
+        android:id="@+id/btnPrev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginBottom="55dp"
+        android:onClick="scrollPhotos"
+        android:text="@string/prev" />
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="59dp"
+        android:layout_marginBottom="50dp"
+        android:onClick="scrollPhotos"
+        android:text="@string/next" />
+
+    <EditText
+        android:id="@+id/etCaption"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="153dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="" />
+
 
 </RelativeLayout>

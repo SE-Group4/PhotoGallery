@@ -22,6 +22,7 @@ import android.widget.GridView;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,11 +30,13 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private ImageAdapter imageAdapter;
     private File newPhoto;
+    public static ArrayList<String> photos = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        photos = findPhotos();
 
         // request permission to store pictures
         requestStoragePermission();
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int positon, long id) {
                 File img = (File) gv.getAdapter().getItem(positon);
-                
+
                 // pass image link to the intent and start Photo Preview activity
                 String imgPath = (String) img.getAbsolutePath();
                 try {
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     // update image list on result of Main Activity
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data ) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_CANCELED) {
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // temporary fix to prevent crash if current Android version lower than required SDK
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
     }
@@ -137,10 +140,10 @@ public class MainActivity extends AppCompatActivity {
 
         // generate image filename
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "_caption_" + timeStamp + "_";
 
         // prepares the final path for the output photo file
-        File image = File.createTempFile(imageFileName,".jpg", downloadFolder);
+        File image = File.createTempFile(imageFileName, ".jpg", downloadFolder);
 
         return image;
     }
@@ -149,6 +152,18 @@ public class MainActivity extends AppCompatActivity {
     private void openSearchActivity(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_REQUEST);
+    }
+
+    public ArrayList<String> findPhotos() {
+        File file = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        ArrayList<String> photos = new ArrayList<>();
+        File[] fList = file.listFiles();
+        if (fList != null) {
+            for (File f : fList) {
+                photos.add(f.getPath());
+            }
+        }
+        return photos;
     }
 
 }
