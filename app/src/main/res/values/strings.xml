@@ -20,4 +20,6 @@
     <string name="apply_search_button">Apply Search</string>
     <string name="search_clear_button">Clear</string>
     <string name="search_cancel_button">Cancel</string>
+    <string name="next">Next</string>
+    <string name="prev">Prev</string>
 </resources>
