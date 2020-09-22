@@ -22,3 +22,11 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+task installGitHooks(type: Copy) {
+    from file("$projectDir/pre-commit")
+    into file("$projectDir/.git/hooks")
+    fileMode 0777
+}
+
+tasks.getByPath(':app:preBuild').dependsOn installGitHooks
