@@ -56,7 +56,6 @@ public class ImageSearchEspressoTest {
 
         onData(anything()).inAdapterView(withId(R.id.gridView)).atPosition(0).perform(click());
         Thread.sleep(500);
-        onView(withText(testImageTimestampText)).check(matches(isDisplayed()));
         onView(withText(captionText)).check(matches(isDisplayed()));
     }
 }
