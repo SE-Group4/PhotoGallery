@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageAdapter imageAdapter;
     private File newPhoto;
     public static ArrayList<String> photos = null;
+    public static final int mRequestCode = 100;
+    public static final String PHOTO_PATHS = "photoPaths";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
                     Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
                     i.putExtra("clickedImageTimestamp", "Timestamp: " + ei.getAttribute(ExifInterface.TAG_DATETIME));
                     i.putExtra("clickedImagePath", imgPath);
-                    startActivity(i);
+                    i.putExtra("photoPaths", photos);
+                    startActivityForResult(i, mRequestCode);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -88,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_CANCELED) {
-            newPhoto.delete();
+        if (requestCode == mRequestCode && resultCode == RESULT_OK && data != null) {
+            photos = data.getStringArrayListExtra(PHOTO_PATHS);
         }
 
         imageAdapter.updateImages();
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_REQUEST);
     }
+
 
     public ArrayList<String> findPhotos() {
         File file = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());

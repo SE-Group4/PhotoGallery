@@ -26,15 +26,17 @@ public class PhotoPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_preview);
 
-        photos = findPhotos();
+
+
+        Intent i = getIntent();
+        String imagePath = i.getStringExtra("clickedImagePath");
+        photos = i.getStringArrayListExtra("photoPaths");
+        index = photos.indexOf(imagePath);
         if (photos.size() == 0) {
             displayPhoto(null);
         } else {
             displayPhoto(photos.get(index));
         }
-
-        Intent i = getIntent();
-        String imagePath = i.getStringExtra("clickedImagePath");
         if (imagePath != null && !imagePath.isEmpty()) {
             File imgFile = new File(imagePath);
 
@@ -93,26 +95,23 @@ public class PhotoPreviewActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intentResult = new Intent();
+        intentResult.putExtra(MainActivity.PHOTO_PATHS, photos);
+        setResult(RESULT_OK, intentResult);
+        finish();
+    }
+
     private void updatePhoto(String path, String caption) {
         String[] attr = path.split("_");
         String newPath = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3];
+
         if (attr.length >= 3) {
             File to = new File(newPath);
             File from = new File(path);
             from.renameTo(to);
             photos.set(index, newPath);
         }
-    }
-
-    public ArrayList<String> findPhotos() {
-        File file = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
-        ArrayList<String> photos = new ArrayList<>();
-        File[] fList = file.listFiles();
-        if (fList != null) {
-            for (File f : fList) {
-                photos.add(f.getPath());
-            }
-        }
-        return photos;
     }
 }
