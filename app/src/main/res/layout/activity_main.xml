@@ -20,38 +20,6 @@
         android:verticalSpacing="10dp" >
     </GridView>
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="1"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:weightSum="3">-->
-
-<!--        <Button-->
-<!--            android:id="@+id/btnLeft"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentStart="true"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="@string/left_button" />-->
-
-<!--        <Button-->
-<!--            android:id="@+id/btnInvisible"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentStart="true"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text=""-->
-<!--            android:visibility="invisible" />-->
-
-<!--        <Button-->
-<!--            android:id="@+id/btnRight"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_centerInParent="true"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="@string/right_button" />-->
-<!--    </LinearLayout>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -75,13 +43,6 @@
             android:onClick="openSearchActivity"
             android:text="@string/search_button"
             android:layout_weight="1"/>
-<!--        <Button-->
-<!--            android:id="@+id/btnCaption"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_centerInParent="true"-->
-<!--            android:text="@string/caption_button"-->
-<!--            android:layout_weight="1"/>-->
     </LinearLayout>
 
 </LinearLayout>
