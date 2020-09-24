@@ -21,13 +21,14 @@ import android.widget.GridView;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int SEARCH_REQUEST = 0;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    public static final int SEARCH_ACTIVITY_REQUEST_CODE = 200;
+    static final int REQUEST_IMAGE_CAPTURE = 33;
     private ImageAdapter imageAdapter;
     private File newPhoto;
     public static ArrayList<String> photos = null;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        photos = findPhotos();
+        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
 
         // request permission to store pictures
         requestStoragePermission();
@@ -50,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         // open photo preview on Grid View item click
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int positon, long id) {
-                File img = (File) gv.getAdapter().getItem(positon);
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                File img = (File) gv.getAdapter().getItem(position);
 
                 // pass image link to the intent and start Photo Preview activity
                 String imgPath = (String) img.getAbsolutePath();
@@ -82,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        photos = findPhotos();
-        imageAdapter.updateImages();
-        imageAdapter.notifyDataSetChanged();
+//        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
+//        imageAdapter.updateImages();
+//        imageAdapter.notifyDataSetChanged();
     }
 
     // update image list on result of Main Activity
@@ -96,8 +97,38 @@ public class MainActivity extends AppCompatActivity {
             photos = data.getStringArrayListExtra(PHOTO_PATHS);
         }
 
-        imageAdapter.updateImages();
-        imageAdapter.notifyDataSetChanged();
+        if (requestCode == REQUEST_IMAGE_CAPTURE) {
+            imageAdapter.updateImages();
+            imageAdapter.notifyDataSetChanged();
+        }
+
+        if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == SearchActivity.FILTER_APPLIED) {
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date startTimestamp, endTimestamp;
+                try {
+                    String from = data.getStringExtra("STARTTIMESTAMP");
+                    String to = data.getStringExtra("ENDTIMESTAMP");
+                    startTimestamp = format.parse(from);
+                    endTimestamp = format.parse(to);
+                } catch (Exception ex) {
+                    startTimestamp = null;
+                    endTimestamp = null;
+                }
+                String keywords = data.getStringExtra("KEYWORDS");
+                final GridView gv = (GridView) findViewById(R.id.gridView);
+                imageAdapter.filterImages(startTimestamp, endTimestamp, keywords);
+                imageAdapter.notifyDataSetChanged();
+                gv.setAdapter(imageAdapter);
+                photos = findPhotos(startTimestamp, endTimestamp, keywords);
+                return;
+            } else if (resultCode == SearchActivity.FILTER_CLEARED) {
+                imageAdapter.updateImages();
+                imageAdapter.notifyDataSetChanged();
+                photos = findPhotos(null, null, "");
+            }
+        }
+
     }
 
     /* helper methods */
@@ -155,17 +186,18 @@ public class MainActivity extends AppCompatActivity {
     // search button
     private void openSearchActivity(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
-        startActivityForResult(intent, SEARCH_REQUEST);
+        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
 
-    public ArrayList<String> findPhotos() {
+    public ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
         ArrayList<String> photos = new ArrayList<>();
         File[] fList = file.listFiles();
         if (fList != null) {
             for (File f : fList) {
-                photos.add(f.getPath());
+                if (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime())) && (keywords == "" || f.getPath().contains(keywords)))
+                    photos.add(f.getPath());
             }
         }
         return photos;

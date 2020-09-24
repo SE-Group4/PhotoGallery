@@ -64,11 +64,6 @@
                     android:layout_weight="1"
                     android:text="@string/search_clear_button" />
 
-                <Button
-                    android:id="@+id/btnCancel"
-                    android:layout_weight="1"
-                    android:onClick="cancel"
-                    android:text="@string/search_cancel_button" />
             </TableRow>
         </TableLayout>
     </ScrollView>
