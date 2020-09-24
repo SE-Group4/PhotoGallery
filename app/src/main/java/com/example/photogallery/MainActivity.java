@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        photos = findPhotos();
         imageAdapter.updateImages();
         imageAdapter.notifyDataSetChanged();
     }
