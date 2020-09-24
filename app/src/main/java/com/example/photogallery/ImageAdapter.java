@@ -12,6 +12,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.util.Date;
 
 public class ImageAdapter extends BaseAdapter {
 
@@ -24,7 +27,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public void updateImages() {
-      this.images = listImages();
+        this.images = listImages();
     }
 
     public int getCount() {
@@ -51,9 +54,9 @@ public class ImageAdapter extends BaseAdapter {
         }
 
         Bitmap b = BitmapFactory.decodeFile(this.images[position].getAbsolutePath());
-        Bitmap scaledB = Bitmap.createScaledBitmap (b, 200, 200, true);
+        Bitmap scaledB = Bitmap.createScaledBitmap(b, 200, 200, true);
 
-        imageView.setImageBitmap(Bitmap.createBitmap (scaledB, 0, 0, scaledB.getWidth(), scaledB.getHeight()));
+        imageView.setImageBitmap(Bitmap.createBitmap(scaledB, 0, 0, scaledB.getWidth(), scaledB.getHeight()));
         scaledB.recycle();
 
         return imageView;
@@ -63,7 +66,20 @@ public class ImageAdapter extends BaseAdapter {
 
     // get list of images from downloads directory
     private File[] listImages() {
-      File directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
-      return directory.listFiles();
+        File directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        return directory.listFiles();
+    }
+
+    public File[] filterImages(final Date startTimestamp, final Date endTimestamp, final String keywords) {
+        FileFilter Filefilter = new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime())) && (keywords == "" || f.getPath().contains(keywords)));
+            }
+        };
+
+        File[] directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()).listFiles(Filefilter);
+        this.images = directory;
+        return directory;
     }
 }

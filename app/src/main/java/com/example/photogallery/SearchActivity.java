@@ -1,22 +1,20 @@
 package com.example.photogallery;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class SearchActivity extends AppCompatActivity {
-    String keywordSearchText;
-    String dateFromText;
-    String dateToText;
-    String leftLatText;
-    String leftLongText;
-    String rightLatText;
-    String rightLongText;
-    Intent intent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
+public class SearchActivity extends AppCompatActivity {
     public static final int FILTER_APPLIED = 1;
     public static final int FILTER_CLEARED = -1;
 
@@ -24,38 +22,37 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        try {
+            Calendar calendar = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date now = calendar.getTime();
+            String todayStr = new SimpleDateFormat("yyy-MM-dd", Locale.getDefault()).format(now);
+            Date today = format.parse((String) todayStr);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            String tomorrowStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            Date tomorrow = format.parse((String) tomorrowStr);
+            ((EditText) findViewById(R.id.date_from_text)).setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(today));
+            ((EditText) findViewById(R.id.date_to_text)).setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(tomorrow));
+
+        } catch (Exception ex) {
+        }
 
 
         // invoke search logic
         Button applySearchButton = (Button) findViewById(R.id.btnApplySearch);
         applySearchButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    EditText text = findViewById(R.id.keyword_search_text);
-                    keywordSearchText = text.getText().toString();
-
-                    text = findViewById(R.id.date_from_text);
-                    dateFromText = text.getText().toString();
-
-                    text = findViewById(R.id.date_to_text);
-                    dateToText = text.getText().toString();
-
-                    text = findViewById(R.id.top_left_lat_text);
-                    leftLatText = text.getText().toString();
-
-                    text = findViewById(R.id.top_left_long_text);
-                    leftLongText = text.getText().toString();
-
-                    text = findViewById(R.id.bottom_right_lat_text);
-                    rightLatText = text.getText().toString();
-
-                    text = findViewById(R.id.bottom_right_long_text);
-                    rightLongText = text.getText().toString();
-
-                    intent = new Intent();
-                    setResult(FILTER_APPLIED, intent);
-                    finish();
-                }
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent();
+                EditText from = findViewById(R.id.date_from_text);
+                EditText to = findViewById(R.id.date_to_text);
+                EditText keywords = findViewById(R.id.keyword_search_text);
+                i.putExtra("STARTTIMESTAMP", from.getText() != null ? from.getText().toString() : "");
+                i.putExtra("ENDTIMESTAMP", to.getText() != null ? to.getText().toString() : "");
+                i.putExtra("KEYWORDS", keywords.getText() != null ? keywords.getText().toString() : "");
+                setResult(FILTER_APPLIED, i);
+                finish();
+            }
         });
 
         // clear input fields
@@ -63,68 +60,19 @@ public class SearchActivity extends AppCompatActivity {
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText text = findViewById(R.id.keyword_search_text);
-                keywordSearchText = null;
-                text.setText(keywordSearchText);
-
-                text = findViewById(R.id.date_from_text);
-                dateFromText = null;
-                text.setText(dateFromText);
-
-                text = findViewById(R.id.date_to_text);
-                dateToText = null;
-                text.setText(dateToText);
-
-                text = findViewById(R.id.top_left_lat_text);
-                leftLatText = null;
-                text.setText(leftLatText);
-
-                text = findViewById(R.id.top_left_long_text);
-                leftLongText = null;
-                text.setText(leftLongText);
-
-                text = findViewById(R.id.bottom_right_lat_text);
-                rightLatText = null;
-                text.setText(rightLatText);
-
-                text = findViewById(R.id.bottom_right_long_text);
-                rightLongText = null;
-                text.setText(rightLongText);
-
-                intent = new Intent();
-                setResult(FILTER_CLEARED, intent);
+                Intent i = new Intent();
+                EditText from = findViewById(R.id.date_from_text);
+                EditText to = findViewById(R.id.date_to_text);
+                EditText keywords = findViewById(R.id.keyword_search_text);
+                from.setText(null);
+                to.setText(null);
+                keywords.setText(null);
+                i.putExtra("STARTTIMESTAMP", "");
+                i.putExtra("ENDTIMESTAMP", "");
+                i.putExtra("KEYWORDS", "");
+                setResult(FILTER_CLEARED, i);
+                finish();
             }
         });
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        EditText text = findViewById(R.id.keyword_search_text);
-        text.setText(keywordSearchText);
-
-        text = findViewById(R.id.date_from_text);
-        text.setText(dateFromText);
-
-        text = findViewById(R.id.date_to_text);
-        text.setText(dateToText);
-
-        text = findViewById(R.id.top_left_lat_text);
-        text.setText(leftLatText);
-
-        text = findViewById(R.id.top_left_long_text);
-        text.setText(leftLongText);
-
-        text = findViewById(R.id.bottom_right_lat_text);
-        text.setText(rightLatText);
-
-        text = findViewById(R.id.bottom_right_long_text);
-        text.setText(rightLongText);
-    }
-
-
-    // cancel search
-    public void cancel(View view) {
-        finish();
     }
 }
