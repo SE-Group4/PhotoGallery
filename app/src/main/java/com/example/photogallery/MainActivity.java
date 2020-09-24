@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-//        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
-//        imageAdapter.updateImages();
-//        imageAdapter.notifyDataSetChanged();
     }
 
     // update image list on result of Main Activity
@@ -104,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
+            photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             imageAdapter.updateImages();
             imageAdapter.notifyDataSetChanged();
         }
