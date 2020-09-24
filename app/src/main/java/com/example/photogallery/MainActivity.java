@@ -1,5 +1,7 @@
 package com.example.photogallery;
 
+import android.content.res.AssetManager;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.ExifInterface;
@@ -14,13 +16,17 @@ import androidx.core.content.FileProvider;
 import android.content.Intent;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -202,5 +208,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return photos;
     }
-
 }
