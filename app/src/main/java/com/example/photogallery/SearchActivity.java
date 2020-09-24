@@ -25,6 +25,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+
         // invoke search logic
         Button applySearchButton = (Button) findViewById(R.id.btnApplySearch);
         applySearchButton.setOnClickListener(new View.OnClickListener() {
