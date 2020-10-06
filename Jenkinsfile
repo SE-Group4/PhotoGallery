@@ -4,7 +4,7 @@ pipeline {
     stage('Test') {
       steps {
         sh 'chmod 755 gradlew'
-        sh './gradlew clean assembleDebug test --no-daemon'
+        sh 'chmod +x gradlew && ./gradlew  test connectedAndroidTest'
       }
     }
 
