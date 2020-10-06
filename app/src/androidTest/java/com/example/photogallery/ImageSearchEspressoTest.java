@@ -41,7 +41,7 @@ public class ImageSearchEspressoTest {
 
     @Test
     public void dateTest() throws InterruptedException {
-        String captionText = "test";
+        String captionText = "caption";
         String testImageTimestampText = "Timestamp: 2020:09:24 06:24:17";
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
