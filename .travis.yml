@@ -1,36 +1,69 @@
-language: android
-dist: trusty
-jdk: oraclejdk8
-env:
-  global:
-    - ANDROID_TARGET=android-22
-    - ANDROID_ABI=armeabi-v7a
-android:
-  components:
-    - platform-tools
-    - tools
-    - build-tools-27.0.3
-    - android-27
-    - extra
-    - addon
-    - $ANDROID_TARGET
-    - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
+  3
+    4
+    5
+    6
+    7
+    8
+    9
+    10
+    11
+    12
+    13
+    14
+    15
+    16
+    17
+    18
+    19
+    20
+    21
+    22
+    23
+    24
+    25
+    26
+    27
+    28
+    29
+    30
+    31
+    32
+    33
+    34
+    35
 
-before_install:
-  - chmod +x gradlew
-  - yes | sdkmanager "platforms;android-27"
-  - yes | sdkmanager "platforms;android-28"
-
-
-before_script:
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI -c 512M
-  - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell settings put global window_animation_scale 0 &
-  - adb shell settings put global transition_animation_scale 0 &
-  - adb shell settings put global animator_duration_scale 0 &
-  - adb shell input keyevent 82 &
-
-script:
-  - ./gradlew test
-  - ./gradlew connectedAndroidTest
+  language : android
+  sudo : required
+  jdk : oraclejdk8
+  env:
+    global :
+      - ANROID_API_LEVEL = 30
+      - ANDROID_BUILD_TOOLS_VERSION = 30.0.2
+  android :
+    components :
+      - tools
+      - platform-tools
+      - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+      - android - $ANDROID_API_LEVEL
+      - extra-google-google_play_services
+      - extra-google-m2repository
+      - addon-google_apis-google-$ANDROID_API_LEVEL
+    licences :
+      - 'android-sdk-preview-license-.+'
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
+  before_script :
+    - mkdir -p "$ANDROID_HOME/licenses"
+    - cp ./licenses/* "$ANDROID_HOME/licenses"
+  before_cache:
+    - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+    - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  cache:
+    directories:
+      - $HOME/.gradle/caches/
+      - $HOME/.gradle/wrapper/
+      - $HOME/.android/build-cache
+  script :
+    - ./gradlew build check
+  before_install:
+    - chmod +x gradlew
