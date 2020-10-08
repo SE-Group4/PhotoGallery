@@ -1,15 +1,16 @@
 package com.example.photogallery;
 
-import android.content.res.AssetManager;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
@@ -23,10 +24,7 @@ import android.widget.Button;
 import android.widget.GridView;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     public static final int SEARCH_ACTIVITY_REQUEST_CODE = 200;
     static final int REQUEST_IMAGE_CAPTURE = 33;
+    static final double[] FALLBACK_COORDINATES = { 49.220509, -123.007111 };
     private ImageAdapter imageAdapter;
     private File newPhoto;
     public static ArrayList<String> photos = null;
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
 
         // request permission to store pictures
-        requestStoragePermission();
+        requestGPSPermission();
 
         // display image gallery
         final GridView gv = (GridView) findViewById(R.id.gridView);
@@ -103,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             imageAdapter.updateImages();
+            imageAdapter.updateCoordinateTags(getCoordinates());
             imageAdapter.notifyDataSetChanged();
         }
 
@@ -120,14 +120,17 @@ public class MainActivity extends AppCompatActivity {
                     endTimestamp = null;
                 }
                 String keywords = data.getStringExtra("KEYWORDS");
+                String lat = data.getStringExtra("LAT");
+                String lng = data.getStringExtra("LNG");
                 final GridView gv = (GridView) findViewById(R.id.gridView);
-                imageAdapter.filterImages(startTimestamp, endTimestamp, keywords);
+                imageAdapter.filterImages(startTimestamp, endTimestamp, keywords, lat, lng);
                 imageAdapter.notifyDataSetChanged();
                 gv.setAdapter(imageAdapter);
                 photos = findPhotos(startTimestamp, endTimestamp, keywords);
                 return;
             } else if (resultCode == SearchActivity.FILTER_CLEARED) {
                 imageAdapter.updateImages();
+                imageAdapter.updateCoordinateTags(getCoordinates());
                 imageAdapter.notifyDataSetChanged();
                 photos = findPhotos(null, null, "");
             }
@@ -150,6 +153,30 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
+    }
+
+    // request permission to use GPS
+    private void requestGPSPermission() {
+        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions( this, new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION },222 );
+        }
+    }
+
+    // TODO: move out to a helper class
+    private  double[] getCoordinates() {
+        try {
+            LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            double[] coordinates = {0, 0};
+            if (location != null) {
+                coordinates[0] = location.getLatitude();
+                coordinates[1] = location.getLongitude();
+                return coordinates;
+            }
+        } catch (SecurityException e) {
+            Log.e("getLocationFailed", e.getMessage());
+        }
+        return FALLBACK_COORDINATES;
     }
 
     // invoke camera
@@ -192,7 +219,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
-
 
     public ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
