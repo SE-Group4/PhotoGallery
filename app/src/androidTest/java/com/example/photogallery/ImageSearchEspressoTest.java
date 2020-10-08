@@ -12,6 +12,7 @@ import androidx.test.InstrumentationRegistry;
 
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,7 +88,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
         onView(withId(R.id.gridView)).check(matches(hasChildCount(0)));
     }
 
-//    // WIP
+//    // WIP test
 //    @Test
 //    public void cameraTest() {
 //        Bitmap bitmap = BitmapFactory.decodeResource(
