@@ -54,11 +54,11 @@ public class ImageAdapter extends BaseAdapter {
         }
 
         Bitmap b = BitmapFactory.decodeFile(this.images[position].getAbsolutePath());
-        Bitmap scaledB = Bitmap.createScaledBitmap(b, 200, 200, true);
-
-        imageView.setImageBitmap(Bitmap.createBitmap(scaledB, 0, 0, scaledB.getWidth(), scaledB.getHeight()));
-        scaledB.recycle();
-
+        if (b != null){
+            Bitmap scaledB = Bitmap.createScaledBitmap(b, 200, 200, true);
+            imageView.setImageBitmap(Bitmap.createBitmap(scaledB, 0, 0, scaledB.getWidth(), scaledB.getHeight()));
+            scaledB.recycle();
+        }
         return imageView;
     }
 
@@ -66,7 +66,7 @@ public class ImageAdapter extends BaseAdapter {
 
     // get list of images from downloads directory
     private File[] listImages() {
-        File directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        File directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString());
         return directory.listFiles();
     }
 
@@ -78,7 +78,7 @@ public class ImageAdapter extends BaseAdapter {
             }
         };
 
-        File[] directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()).listFiles(Filefilter);
+        File[] directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()).listFiles(Filefilter);
         this.images = directory;
         return directory;
     }

@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
     // create files/Download directory if it does not exist, then creates jpg file for new photo
     private File createImageFile() throws IOException {
 
-        File downloadFolder = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        File downloadFolder = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString());
 
         // create the Download folder if it does not exist
         if (!downloadFolder.exists()) {
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
-        File file = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        File file = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString());
         ArrayList<String> photos = new ArrayList<>();
         File[] fList = file.listFiles();
         if (fList != null) {
@@ -206,4 +206,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return photos;
     }
+
 }
