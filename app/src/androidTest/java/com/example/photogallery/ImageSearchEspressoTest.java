@@ -26,6 +26,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
+import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -42,8 +43,9 @@ public class ImageSearchEspressoTest {
     @Test
     public void dateTest() throws InterruptedException {
         String captionText = "caption";
-        String testImageTimestampText = "Timestamp: 2020:09:24 06:24:17";
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String lat = "49.220509";
+        String lng = "-123.007111";
 
         onView(withId(R.id.btnSearch)).perform(click());
         Thread.sleep(500);
@@ -51,6 +53,8 @@ public class ImageSearchEspressoTest {
         onView(withId(R.id.keyword_search_text)).perform(scrollTo(), clearText(), typeText(captionText), closeSoftKeyboard());
         onView(withId(R.id.date_from_text)).perform(clearText(), typeText("2020-08-21"), closeSoftKeyboard());
         onView(withId(R.id.date_to_text)).perform(clearText(), typeText(currentDate), closeSoftKeyboard());
+        onView(withId(R.id.lat_text)).perform(clearText(), typeText(lat), closeSoftKeyboard());
+        onView(withId(R.id.lng_text)).perform(clearText(), typeText(lng), closeSoftKeyboard());
         onView((withId(R.id.btnApplySearch))).perform(click());
         Thread.sleep(500);
 
@@ -58,4 +62,25 @@ public class ImageSearchEspressoTest {
         Thread.sleep(500);
         onView(withText(captionText)).check(matches(isDisplayed()));
     }
+
+     @Test
+     public void locationTest() throws InterruptedException {
+         String wrongLat = "38.220510";
+         String wrongLng = "-122.007110";
+         String captionText = "caption";
+
+         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+         onView(withId(R.id.btnSearch)).perform(click());
+         Thread.sleep(500);
+         onView(withId(R.id.keyword_search_text)).perform(scrollTo(), clearText(), typeText(captionText), closeSoftKeyboard());
+         onView(withId(R.id.date_from_text)).perform(clearText(), typeText("2020-08-21"), closeSoftKeyboard());
+         onView(withId(R.id.date_to_text)).perform(clearText(), typeText(currentDate), closeSoftKeyboard());
+         onView(withId(R.id.lat_text)).perform(clearText(), typeText(wrongLat), closeSoftKeyboard());
+         onView(withId(R.id.lng_text)).perform(clearText(), typeText(wrongLng), closeSoftKeyboard());
+         onView((withId(R.id.btnApplySearch))).perform(click());
+         Thread.sleep(500);
+
+         onView(withId(R.id.gridView)).check(matches(hasChildCount(0)));
+     }
 }
