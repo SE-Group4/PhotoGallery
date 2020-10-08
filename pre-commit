@@ -15,4 +15,4 @@ git stash pop -q
 # return the './gradlew test' exit code
 exit $RESULT
 
-# asdasd testasdfasdadsfasd
+# asdasd testasdfasdadsfasddsf
