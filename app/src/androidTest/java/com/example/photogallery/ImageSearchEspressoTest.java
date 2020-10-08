@@ -50,7 +50,6 @@ import static org.hamcrest.Matchers.anything;
 public class ImageSearchEspressoTest {
     @Rule public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
     @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    @Rule public IntentsTestRule<MainActivity> intentsRule = new IntentsTestRule<>(MainActivity.class);
     @Test
     public void dateTest() throws InterruptedException {
         String captionText = "caption";
@@ -63,28 +62,4 @@ public class ImageSearchEspressoTest {
         onData(anything()).inAdapterView(withId(R.id.gridView)).atPosition(0).perform(click());
         onView(withText(captionText)).check(matches(isDisplayed()));
     }
-
-    @Test
-    public void cameraTest() {
-        Drawable testPic = activityRule.getActivity().getDrawable(R.drawable.ic_launcher_background);
-//        Bitmap bitmap = Bitmap.createBitmap(testPic.getIntrinsicWidth(), testPic.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Bitmap bitmap = BitmapFactory.decodeResource(
-                InstrumentationRegistry.getTargetContext().getResources(),
-                R.mipmap.ic_launcher);
-        Intent resultData = new Intent();
-        resultData.putExtra("data", bitmap);
-        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
-
-        // Stub out the Camera. When an intent is sent to the Camera, this tells Espresso to respond
-        // with the ActivityResult we just created
-        intending(toPackage("com.example.photogallery.MainActivity")).respondWith(result);
-
-        // Now that we have the stub in place, click on the button in our app that launches into the Camera
-        onView(withId(R.id.btnSnap)).perform(click());
-
-        // We can also validate that an intent resolving to the "camera" activity has been sent out by our app
-        intended(toPackage("com.android.camera2"));
-    }
-
-
 }
