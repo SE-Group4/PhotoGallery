@@ -30,6 +30,8 @@ cache:
 
 before_install:
   - chmod +x gradlew
+  - yes | sdkmanager "platforms;android-30"
+  - yes | sdkmanager "build-tools;30.0.2"
 
 before_script:
   - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI -c 512M
@@ -42,4 +44,4 @@ before_script:
 
 script:
   - ./gradlew test
-  - ./gradlew connectedAndroidTest 
+  - ./gradlew connectedAndroidTest
