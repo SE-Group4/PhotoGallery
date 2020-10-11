@@ -30,7 +30,7 @@ cache:
 
 before_install:
   - chmod +x gradlew
-  - touch $HOME/.android/repositories.cfgQ
+  - touch $HOME/.android/repositories.cfg
   - yes | sdkmanager "platforms;android-30"
   - yes | sdkmanager "build-tools;30.0.2"
 
