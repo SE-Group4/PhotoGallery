@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // search button
-    private void openSearchActivity(View v) {
+    public void openSearchActivity(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
