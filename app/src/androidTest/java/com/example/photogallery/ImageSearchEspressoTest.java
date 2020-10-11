@@ -1,30 +1,28 @@
 package com.example.photogallery;
 
-import android.app.Activity;
-import android.app.Instrumentation;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.Manifest;
+import android.content.res.AssetManager;
 import android.icu.text.SimpleDateFormat;
+import android.os.Environment;
+import android.os.FileUtils;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.rule.ActivityTestRule;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+import androidx.test.rule.GrantPermissionRule;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import androidx.test.rule.GrantPermissionRule;
-import androidx.test.runner.AndroidJUnit4;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Locale;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
@@ -33,12 +31,11 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.Intents.intending;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
+import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.hamcrest.Matchers.anything;
 
 /**
@@ -46,20 +43,70 @@ import static org.hamcrest.Matchers.anything;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class ImageSearchEspressoTest {
-    @Rule public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
-    @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    @Rule
+    public ActivityScenarioRule activityRule = new ActivityScenarioRule<>(MainActivity.class);
+    @Rule
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    @Rule
+    public GrantPermissionRule readRule = GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE);
+    @Rule
+    public GrantPermissionRule locationRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+    @BeforeClass
+    public static void createTestImage() throws IOException {
+        String[] filenames = getInstrumentation().getContext().getAssets().list("testimgs");
+        AssetManager assets = getInstrumentation().getContext().getAssets();
+        File downloadFolder = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        if (!downloadFolder.exists())
+            downloadFolder.mkdir();
+        assert filenames != null;
+
+        for (String filename : filenames) {
+            InputStream testImg = assets.open("testimgs/" + filename);
+            File f = new File(downloadFolder + "/" + filename);
+            FileOutputStream fo = new FileOutputStream(f);
+            FileUtils.copy(testImg, fo);
+        }
+    }
+
     @Test
-    public void dateTest() throws InterruptedException {
+    public void dateTest() {
         String captionText = "caption";
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String lat = "49.220509";
+        String lng = "-123.007111";
+
         onView(withId(R.id.btnSearch)).perform(click());
         onView(withId(R.id.keyword_search_text)).perform(scrollTo(), clearText(), typeText(captionText), closeSoftKeyboard());
         onView(withId(R.id.date_from_text)).perform(clearText(), typeText("2020-08-21"), closeSoftKeyboard());
         onView(withId(R.id.date_to_text)).perform(clearText(), typeText(currentDate), closeSoftKeyboard());
+        onView(withId(R.id.lat_text)).perform(clearText(), typeText(lat), closeSoftKeyboard());
+        onView(withId(R.id.lng_text)).perform(clearText(), typeText(lng), closeSoftKeyboard());
         onView((withId(R.id.btnApplySearch))).perform(click());
         onData(anything()).inAdapterView(withId(R.id.gridView)).atPosition(0).perform(click());
         onView(withText(captionText)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void locationTest() throws InterruptedException {
+
+        String wrongLat = "38.220510";
+        String wrongLng = "-122.007110";
+        String captionText = "caption";
+
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        onView(withId(R.id.btnSearch)).perform(click());
+        onView(withId(R.id.keyword_search_text)).perform(scrollTo(), clearText(), typeText(captionText), closeSoftKeyboard());
+        onView(withId(R.id.date_from_text)).perform(clearText(), typeText("2020-08-21"), closeSoftKeyboard());
+        onView(withId(R.id.date_to_text)).perform(clearText(), typeText(currentDate), closeSoftKeyboard());
+        onView(withId(R.id.lat_text)).perform(clearText(), typeText(wrongLat), closeSoftKeyboard());
+        onView(withId(R.id.lng_text)).perform(clearText(), typeText(wrongLng), closeSoftKeyboard());
+        onView((withId(R.id.btnApplySearch))).perform(click());
+
+        onView(withId(R.id.gridView)).check(matches(hasChildCount(0)));
+
     }
 }
