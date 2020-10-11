@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.res.AssetManager;
 import android.icu.text.SimpleDateFormat;
 import android.os.Environment;
-import android.os.FileUtils;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
@@ -19,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.Locale;
 
@@ -67,7 +67,12 @@ public class ImageSearchEspressoTest {
             InputStream testImg = assets.open("testimgs/" + filename);
             File f = new File(downloadFolder + "/" + filename);
             FileOutputStream fo = new FileOutputStream(f);
-            FileUtils.copy(testImg, fo);
+            copyFile(testImg, fo);
+            testImg.close();
+            testImg = null;
+            fo.flush();
+            fo.close();
+            fo = null;
         }
     }
 
@@ -108,5 +113,13 @@ public class ImageSearchEspressoTest {
 
         onView(withId(R.id.gridView)).check(matches(hasChildCount(0)));
 
+    }
+
+    private static void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+        }
     }
 }
