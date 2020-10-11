@@ -36,7 +36,7 @@ cache:
     - $HOME/.android/build-cache
 
 before_script:
-  - echo no | avdmanager create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI -c 512M
+  - avdmanager create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI -c 512M
   - avdmanager -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell settings put global window_animation_scale 0 &
