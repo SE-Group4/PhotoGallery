@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -69,11 +70,11 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public void updateCoordinateTags(double[] coordinates) {
-        for (int i = 0; i < this.images.length; i++) {
+        for(int i = 0; i < this.images.length; i++) {
             try {
                 String path = images[i].getAbsolutePath();
                 ExifInterface exifInterface = new ExifInterface(path);
-                if (exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE) == null || exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE) == null) {
+                if(exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE) == null || exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE) == null)  {
                     exifInterface.setAttribute(ExifInterface.TAG_GPS_LATITUDE, convertToGPS(coordinates[0]));
                     exifInterface.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertToGPS(coordinates[1]));
                     exifInterface.saveAttributes();
@@ -84,7 +85,7 @@ public class ImageAdapter extends BaseAdapter {
         }
     }
 
-    public File[] filterImages(final Date startTimestamp, final Date endTimestamp, final String keywords, final String lat, final String lng) {
+    public File[] filterImages(final Date startTimestamp, final Date endTimestamp, final String keywords, final  String lat, final String lng) {
         FileFilter Filefilter = new FileFilter() {
             @Override
             public boolean accept(File f) {
@@ -106,7 +107,8 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     private static boolean acceptByCoordinates(File f, String latitude, String longitude) {
-        if (latitude.equals("") && longitude.equals("")) {
+        if (latitude.equals("") && longitude.equals(""))
+        {
             return true;
         }
 
@@ -140,7 +142,7 @@ public class ImageAdapter extends BaseAdapter {
         int minute = (int) coordinate;
         coordinate *= 60;
         coordinate -= (minute * 60.0d);
-        int second = (int) (coordinate * 1000.0d);
+        int second = (int) (coordinate*1000.0d);
 
         sb.setLength(0);
         sb.append(degree);
