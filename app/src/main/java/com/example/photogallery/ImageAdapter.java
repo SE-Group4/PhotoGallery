@@ -56,10 +56,8 @@ public class ImageAdapter extends BaseAdapter {
 
         Bitmap b = BitmapFactory.decodeFile(this.images[position].getAbsolutePath());
         Bitmap scaledB = Bitmap.createScaledBitmap(b, 200, 200, true);
-
         imageView.setImageBitmap(Bitmap.createBitmap(scaledB, 0, 0, scaledB.getWidth(), scaledB.getHeight()));
         scaledB.recycle();
-
         return imageView;
     }
 

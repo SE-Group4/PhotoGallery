@@ -1,7 +1,5 @@
 package com.example.photogallery;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
@@ -10,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,7 +20,7 @@ import java.util.Locale;
 public class SearchActivity extends AppCompatActivity {
     public static final int FILTER_APPLIED = 1;
     public static final int FILTER_CLEARED = -1;
-    static final double[] FALLBACK_COORDINATES = { 49.220509, -123.007111 };
+    static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

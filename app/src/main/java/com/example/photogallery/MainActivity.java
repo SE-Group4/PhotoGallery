@@ -1,6 +1,7 @@
 package com.example.photogallery;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -8,13 +9,6 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
-import android.content.Intent;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -22,6 +16,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     public static final int SEARCH_ACTIVITY_REQUEST_CODE = 200;
     static final int REQUEST_IMAGE_CAPTURE = 33;
-    static final double[] FALLBACK_COORDINATES = { 49.220509, -123.007111 };
+    static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
     private ImageAdapter imageAdapter;
     private File newPhoto;
     public static ArrayList<String> photos = null;
@@ -157,13 +156,13 @@ public class MainActivity extends AppCompatActivity {
 
     // request permission to use GPS
     private void requestGPSPermission() {
-        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions( this, new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION },222 );
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 222);
         }
     }
 
     // TODO: move out to a helper class
-    private  double[] getCoordinates() {
+    private double[] getCoordinates() {
         try {
             LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -215,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // search button
-    private void openSearchActivity(View v) {
+    public void openSearchActivity(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }

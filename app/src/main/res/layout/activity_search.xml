@@ -79,6 +79,7 @@
             </TableRow>
 
             <TableRow>
+
                 <Button
                     android:id="@+id/btnApplySearch"
                     android:layout_weight="1"
