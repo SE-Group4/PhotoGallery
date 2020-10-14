@@ -12,6 +12,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import java.util.Arrays;
+import java.util.stream.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -86,16 +88,14 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public File[] filterImages(final Date startTimestamp, final Date endTimestamp, final String keywords, final  String lat, final String lng) {
-        FileFilter Filefilter = new FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                return (acceptByTimestamp(f, startTimestamp, endTimestamp) && acceptByKeywords(f, keywords) && acceptByCoordinates(f, lat, lng));
-            }
-        };
-
-        File[] directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()).listFiles(Filefilter);
-        this.images = directory;
-        return directory;
+        File[] files = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()).listFiles();
+        files = Arrays.stream(files)
+                .filter(f -> acceptByTimestamp(f, startTimestamp, endTimestamp) &&
+                                acceptByKeywords(f, keywords) &&
+                                acceptByCoordinates(f, lat, lng)
+                ).toArray(File[]::new);
+        this.images = files;
+        return files;
     }
 
     private static boolean acceptByKeywords(File f, final String keywords) {
