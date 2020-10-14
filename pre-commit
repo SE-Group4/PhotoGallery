@@ -12,5 +12,5 @@ RESULT=$?
 # unstash the unstashed changes
 git stash pop -q
 
-# return the './gradlew test' exit code 
+# return the './gradlew test' exit code  
 exit $RESULT
