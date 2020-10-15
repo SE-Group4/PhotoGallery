@@ -26,8 +26,6 @@ public class PhotoPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_preview);
 
-
-
         Intent i = getIntent();
         String imagePath = i.getStringExtra("clickedImagePath");
         photos = i.getStringArrayListExtra("photoPaths");
