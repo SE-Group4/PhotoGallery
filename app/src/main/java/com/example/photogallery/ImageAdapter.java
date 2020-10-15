@@ -5,23 +5,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import java.util.Arrays;
-import java.util.stream.*;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 
 public class ImageAdapter extends BaseAdapter {
 
-    private Context context;
+    private final Context context;
     private File[] images;
 
     public ImageAdapter(Context context) {

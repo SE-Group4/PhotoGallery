@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Photos {
-    private Context context;
+    private final Context context;
     private ArrayList<String> photoStringPaths;
 
     public Photos(Context context) {

@@ -1,11 +1,9 @@
 package com.example.photogallery;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,7 +23,6 @@ import com.example.photogallery.View.MainView;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public static final int REQUEST_PHOTO_PREVIEW = 100;
 
     private ImageAdapter imageAdapter;
-    private File newPhoto;
     private GridView gv;
     private Button searchButton;
     private Photos photos;
@@ -50,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         presenter = new MainPresenter(this, photos);
         imageAdapter = new ImageAdapter(this);
 
-        // request permission to store pictures
+        // request permissions
         requestGPSPermission();
 
         // display image gallery
@@ -59,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         // open photo preview on Grid View item click
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-                System.out.println(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
                 imageAdapter.updateImages();
                 imageAdapter.notifyDataSetChanged();
                 File img = (File) gv.getAdapter().getItem(position);
@@ -94,12 +88,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         searchButton = (Button) findViewById(R.id.btnSearch);
     }
 
-    // update image list on resume of Main Activity
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
     // update image list on result of Main Activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -128,20 +116,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
         gv.setAdapter(imageAdapter);
     }
 
-    /* helper methods */
-
     // referenced from activity_main.xml
     public void takePhoto(View v) throws IOException {
-        dispatchTakePictureIntent();
-    }
-
-    // request permission to store images
-    private void requestStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // temporary fix to prevent crash if current Android version lower than required SDK
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            }
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File downloadFolder = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        if (!downloadFolder.exists()) downloadFolder.mkdir();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "_caption_" + timeStamp + "_";
+        File newPhoto = File.createTempFile(imageFileName, ".jpg", downloadFolder);
+        if (newPhoto != null) {
+            Uri photoURI = FileProvider.getUriForFile(this, "com.example.photogallery.fileprovider", newPhoto);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI); // FIXME: uncomment when saving images. NOTE: sets Bitmap data to null
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
@@ -150,41 +136,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 222);
         }
-    }
-
-    // invoke camera
-    private void dispatchTakePictureIntent() throws IOException {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        newPhoto = createImageFile();
-
-        if (newPhoto != null) {
-
-            // get a URI for the file based on authority of app's own fileprovider
-            Uri photoURI = FileProvider.getUriForFile(this, "com.example.photogallery.fileprovider", newPhoto);
-
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI); // FIXME: uncomment when saving images. NOTE: sets Bitmap data to null
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-    // create files/Download directory if it does not exist, then creates jpg file for new photo
-    private File createImageFile() throws IOException {
-
-        File downloadFolder = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
-
-        // create the Download folder if it does not exist
-        if (!downloadFolder.exists()) {
-            downloadFolder.mkdir();
-        }
-
-        // generate image filename
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "_caption_" + timeStamp + "_";
-
-        // prepares the final path for the output photo file
-        File image = File.createTempFile(imageFileName, ".jpg", downloadFolder);
-
-        return image;
     }
 
     // search button

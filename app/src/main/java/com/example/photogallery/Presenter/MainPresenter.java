@@ -15,30 +15,34 @@ import java.util.Date;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-public class MainPresenter {
+public class MainPresenter implements IMainPresenter {
 
     public static final String PHOTO_PATHS = "photoPaths";
     static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
 
-    private MainView mv;
-    private Photos photos;
+    private final MainView mv;
+    private final Photos photos;
 
     public MainPresenter(MainView mainView, Photos photos) {
         this.mv = mainView;
         this.photos = photos;
     }
 
-    public void handleRequestImageCapture(ImageAdapter imageAdapter){
+    /* Updates the model after image capture */
+    @Override
+    public void handleRequestImageCapture(ImageAdapter imageAdapter) {
         photos.setPhotoStringPaths(new Date(Long.MIN_VALUE), new Date(), "");
         imageAdapter.updateImages();
         imageAdapter.updateCoordinateTags(getCoordinates());
         imageAdapter.notifyDataSetChanged();
     }
 
+    @Override
     public void handlePhotoPreviewUpdates(Intent data) {
         photos.setPhotoStringPaths(data.getStringArrayListExtra(PHOTO_PATHS));
     }
 
+    @Override
     public void handleRequestSearchFilter(Intent data, ImageAdapter imageAdapter) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startTimestamp, endTimestamp;
@@ -58,9 +62,9 @@ public class MainPresenter {
         imageAdapter.notifyDataSetChanged();
         mv.updateGridView(imageAdapter);
         photos.setPhotoStringPaths(startTimestamp, endTimestamp, keywords);
-        return;
     }
 
+    @Override
     public void handleSearchFiltersCleared(ImageAdapter imageAdapter) {
         imageAdapter.updateImages();
         imageAdapter.updateCoordinateTags(getCoordinates());
@@ -83,4 +87,5 @@ public class MainPresenter {
         }
         return FALLBACK_COORDINATES;
     }
+
 }
