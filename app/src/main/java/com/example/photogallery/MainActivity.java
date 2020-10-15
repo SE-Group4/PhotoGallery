@@ -22,6 +22,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.example.photogallery.Model.Photos;
+import com.example.photogallery.Presenter.MainPresenter;
+import com.example.photogallery.View.MainView;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -29,13 +33,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainView {
     public static final int SEARCH_ACTIVITY_REQUEST_CODE = 200;
     static final int REQUEST_IMAGE_CAPTURE = 33;
     static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
     private ImageAdapter imageAdapter;
     private File newPhoto;
-    public static ArrayList<String> photos = null;
+    private GridView gv;
+    private Button searchButton;
+    Photos photos = new Photos(getApplicationContext());
+    MainPresenter presenter;
     public static final int mRequestCode = 100;
     public static final String PHOTO_PATHS = "photoPaths";
 
@@ -43,14 +50,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
+        initViews();
+        presenter = new MainPresenter(this, photos);
+        imageAdapter = new ImageAdapter(this);
+        photos.getPhotoList(new Date(Long.MIN_VALUE), new Date(), "");
 
         // request permission to store pictures
         requestGPSPermission();
 
         // display image gallery
-        final GridView gv = (GridView) findViewById(R.id.gridView);
-        imageAdapter = new ImageAdapter(this);
         gv.setAdapter(imageAdapter);
 
         // open photo preview on Grid View item click
@@ -65,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
                     i.putExtra("clickedImageTimestamp", "Timestamp: " + ei.getAttribute(ExifInterface.TAG_DATETIME));
                     i.putExtra("clickedImagePath", imgPath);
-                    i.putExtra("photoPaths", photos);
+                    i.putExtra("photoPaths", photos.getPhotoList());
                     startActivityForResult(i, mRequestCode);
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -74,13 +82,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // open search window
-        Button searchButton = (Button) findViewById(R.id.btnSearch);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openSearchActivity(v);
             }
         });
+    }
+
+    public void initViews() {
+        gv = (GridView) findViewById(R.id.gridView);
+        searchButton = (Button) findViewById(R.id.btnSearch);
     }
 
     // update image list on resume of Main Activity
@@ -99,10 +111,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
-            imageAdapter.updateImages();
-            imageAdapter.updateCoordinateTags(getCoordinates());
-            imageAdapter.notifyDataSetChanged();
+            presenter.handleRequestImageCapture(imageAdapter);
         }
 
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
@@ -121,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 String keywords = data.getStringExtra("KEYWORDS");
                 String lat = data.getStringExtra("LAT");
                 String lng = data.getStringExtra("LNG");
-                final GridView gv = (GridView) findViewById(R.id.gridView);
                 imageAdapter.filterImages(startTimestamp, endTimestamp, keywords, lat, lng);
                 imageAdapter.notifyDataSetChanged();
                 gv.setAdapter(imageAdapter);
@@ -159,23 +167,6 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 222);
         }
-    }
-
-    // TODO: move out to a helper class
-    private double[] getCoordinates() {
-        try {
-            LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            double[] coordinates = {0, 0};
-            if (location != null) {
-                coordinates[0] = location.getLatitude();
-                coordinates[1] = location.getLongitude();
-                return coordinates;
-            }
-        } catch (SecurityException e) {
-            Log.e("getLocationFailed", e.getMessage());
-        }
-        return FALLBACK_COORDINATES;
     }
 
     // invoke camera
@@ -217,18 +208,5 @@ public class MainActivity extends AppCompatActivity {
     public void openSearchActivity(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
-    }
-
-    public ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
-        File file = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
-        ArrayList<String> photos = new ArrayList<>();
-        File[] fList = file.listFiles();
-        if (fList != null) {
-            for (File f : fList) {
-                if (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime())) && (keywords == "" || f.getPath().contains(keywords)))
-                    photos.add(f.getPath());
-            }
-        }
-        return photos;
     }
 }

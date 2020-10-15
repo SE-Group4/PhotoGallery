@@ -105,9 +105,9 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 
     private void updatePhoto(String path, String caption) {
         String[] attr = path.split("_");
-        String newPath = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3];
+        String newPath = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4];
 
-        if (attr.length >= 3) {
+        if (attr.length >= 4) {
             File to = new File(newPath);
             File from = new File(path);
             from.renameTo(to);
