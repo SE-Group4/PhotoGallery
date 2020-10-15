@@ -22,6 +22,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -31,6 +36,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     public static final int SEARCH_ACTIVITY_REQUEST_CODE = 200;
+    public static final int SESSION_ACTIVITY_REQUEST_CODE = 300;
     static final int REQUEST_IMAGE_CAPTURE = 33;
     static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
     private ImageAdapter imageAdapter;
@@ -47,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         // request permission to store pictures
         requestGPSPermission();
+        initializeTwitter();
 
         // display image gallery
         final GridView gv = (GridView) findViewById(R.id.gridView);
@@ -79,6 +86,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openSearchActivity(v);
+            }
+        });
+
+        // open account window
+        Button accountButton = (Button) findViewById(R.id.btnAccount);
+        accountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSessionActivity(v);
             }
         });
     }
@@ -142,6 +158,18 @@ public class MainActivity extends AppCompatActivity {
     // referenced from activity_main.xml
     public void takePhoto(View v) throws IOException {
         dispatchTakePictureIntent();
+    }
+
+    private void initializeTwitter() {
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(
+                        "CONSUMER_KEY",
+                        "CONSUMER_SECRET"
+                        ))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
     }
 
     // request permission to store images
@@ -217,6 +245,12 @@ public class MainActivity extends AppCompatActivity {
     public void openSearchActivity(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    }
+
+    // session button
+    public void openSessionActivity(View v) {
+        Intent intent = new Intent(this, SessionActivity.class);
+        startActivityForResult(intent, SESSION_ACTIVITY_REQUEST_CODE);
     }
 
     public ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {

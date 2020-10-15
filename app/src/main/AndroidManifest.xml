@@ -30,6 +30,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity" />
+        <activity android:name=".SessionActivity" />
         <activity android:name=".PhotoPreviewActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
