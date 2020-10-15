@@ -10,7 +10,6 @@ import java.util.Date;
 public class Photos {
     private Context context;
     private ArrayList<String> photoStringPaths;
-    private ArrayList<File> photoFilePaths;
 
     public Photos(Context context) {
         this.context = context;
@@ -39,9 +38,5 @@ public class Photos {
 
     public ArrayList<String> getPhotoStringPaths() {
         return photoStringPaths;
-    }
-
-    public void setPhotoFilePaths() {
-
     }
 }

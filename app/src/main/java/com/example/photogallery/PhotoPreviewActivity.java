@@ -97,6 +97,7 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
         Intent intentResult = new Intent();
         intentResult.putExtra(MainPresenter.PHOTO_PATHS, photos);
         setResult(RESULT_OK, intentResult);

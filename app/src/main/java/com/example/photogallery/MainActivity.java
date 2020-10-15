@@ -54,11 +54,15 @@ public class MainActivity extends AppCompatActivity implements MainView {
         requestGPSPermission();
 
         // display image gallery
-        gv.setAdapter(imageAdapter);
+        updateGridView(imageAdapter);
 
         // open photo preview on Grid View item click
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+                System.out.println(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+                imageAdapter.updateImages();
+                imageAdapter.notifyDataSetChanged();
                 File img = (File) gv.getAdapter().getItem(position);
 
                 // pass image link to the intent and start Photo Preview activity
