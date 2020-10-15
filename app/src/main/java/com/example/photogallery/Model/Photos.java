@@ -9,22 +9,39 @@ import java.util.Date;
 
 public class Photos {
     private Context context;
+    private ArrayList<String> photoStringPaths;
+    private ArrayList<File> photoFilePaths;
 
     public Photos(Context context) {
         this.context = context;
+        this.setPhotoStringPaths(new Date(Long.MIN_VALUE), new Date(), "");
     }
 
+    public Context getContext() {
+        return context;
+    }
 
-    public ArrayList<String> getPhotoList(Date startTimestamp, Date endTimestamp, String keywords) {
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
-        ArrayList<String> photos = new ArrayList<>();
+    public void setPhotoStringPaths(ArrayList<String> photoStringPaths) {
+        this.photoStringPaths = photoStringPaths;
+    }
+
+    public void setPhotoStringPaths(Date startTimestamp, Date endTimestamp, String keywords) {
+        File file = new File(context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
+        photoStringPaths = new ArrayList<>();
         File[] fList = file.listFiles();
         if (fList != null) {
             for (File f : fList) {
                 if (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime())) && (keywords == "" || f.getPath().contains(keywords)))
-                    photos.add(f.getPath());
+                    photoStringPaths.add(f.getPath());
             }
         }
-        return photos;
+    }
+
+    public ArrayList<String> getPhotoStringPaths() {
+        return photoStringPaths;
+    }
+
+    public void setPhotoFilePaths() {
+
     }
 }

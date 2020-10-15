@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.photogallery.Presenter.MainPresenter;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +27,6 @@ public class PhotoPreviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_preview);
-
-
 
         Intent i = getIntent();
         String imagePath = i.getStringExtra("clickedImagePath");
@@ -98,7 +98,7 @@ public class PhotoPreviewActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intentResult = new Intent();
-        intentResult.putExtra(MainActivity.PHOTO_PATHS, photos);
+        intentResult.putExtra(MainPresenter.PHOTO_PATHS, photos);
         setResult(RESULT_OK, intentResult);
         finish();
     }

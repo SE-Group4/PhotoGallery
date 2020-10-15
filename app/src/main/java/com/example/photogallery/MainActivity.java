@@ -3,15 +3,12 @@ package com.example.photogallery;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -30,30 +27,28 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements MainView {
     public static final int SEARCH_ACTIVITY_REQUEST_CODE = 200;
     static final int REQUEST_IMAGE_CAPTURE = 33;
-    static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
+    public static final int REQUEST_PHOTO_PREVIEW = 100;
+
     private ImageAdapter imageAdapter;
     private File newPhoto;
     private GridView gv;
     private Button searchButton;
-    Photos photos = new Photos(getApplicationContext());
-    MainPresenter presenter;
-    public static final int mRequestCode = 100;
-    public static final String PHOTO_PATHS = "photoPaths";
+    private Photos photos;
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
+        photos = new Photos(this);
         presenter = new MainPresenter(this, photos);
         imageAdapter = new ImageAdapter(this);
-        photos.getPhotoList(new Date(Long.MIN_VALUE), new Date(), "");
 
         // request permission to store pictures
         requestGPSPermission();
@@ -73,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
                     Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
                     i.putExtra("clickedImageTimestamp", "Timestamp: " + ei.getAttribute(ExifInterface.TAG_DATETIME));
                     i.putExtra("clickedImagePath", imgPath);
-                    i.putExtra("photoPaths", photos.getPhotoList());
-                    startActivityForResult(i, mRequestCode);
+                    i.putExtra("photoPaths", photos.getPhotoStringPaths());
+                    startActivityForResult(i, REQUEST_PHOTO_PREVIEW);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -106,8 +101,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == mRequestCode && resultCode == RESULT_OK && data != null) {
-            photos = data.getStringArrayListExtra(PHOTO_PATHS);
+        if (requestCode == REQUEST_PHOTO_PREVIEW && resultCode == RESULT_OK && data != null) {
+            presenter.handlePhotoPreviewUpdates(data);
         }
 
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
@@ -116,33 +111,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             if (resultCode == SearchActivity.FILTER_APPLIED) {
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date startTimestamp, endTimestamp;
-                try {
-                    String from = data.getStringExtra("STARTTIMESTAMP");
-                    String to = data.getStringExtra("ENDTIMESTAMP");
-                    startTimestamp = format.parse(from);
-                    endTimestamp = format.parse(to);
-                } catch (Exception ex) {
-                    startTimestamp = null;
-                    endTimestamp = null;
-                }
-                String keywords = data.getStringExtra("KEYWORDS");
-                String lat = data.getStringExtra("LAT");
-                String lng = data.getStringExtra("LNG");
-                imageAdapter.filterImages(startTimestamp, endTimestamp, keywords, lat, lng);
-                imageAdapter.notifyDataSetChanged();
-                gv.setAdapter(imageAdapter);
-                photos = findPhotos(startTimestamp, endTimestamp, keywords);
-                return;
+                presenter.handleRequestSearchFilter(data, imageAdapter);
             } else if (resultCode == SearchActivity.FILTER_CLEARED) {
-                imageAdapter.updateImages();
-                imageAdapter.updateCoordinateTags(getCoordinates());
-                imageAdapter.notifyDataSetChanged();
-                photos = findPhotos(null, null, "");
+                presenter.handleSearchFiltersCleared(imageAdapter);
             }
         }
 
+    }
+
+    @Override
+    public void updateGridView(ImageAdapter imageAdapter) {
+        gv.setAdapter(imageAdapter);
     }
 
     /* helper methods */
