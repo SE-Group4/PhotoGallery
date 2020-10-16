@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.photogallery.Presenter.MainPresenter;
 import com.example.photogallery.View.PhotoPreviewView;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +52,19 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPrev
                 img.setImageBitmap(b);
                 TextView imgText = (TextView) findViewById((R.id.preview_image_text));
                 imgText.setText(i.getStringExtra("clickedImageTimestamp"));
+
+                // display share button
+                if (TwitterCore.getInstance().getSessionManager().getActiveSession() != null) {
+                    Button accountBtn = (Button) findViewById(R.id.btnShare);
+                    if (accountBtn != null) {
+                        accountBtn.setVisibility(View.VISIBLE);
+                        accountBtn.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                shareOnTwitter(imgFile);
+                            }
+                        });
+                    }
+                }
             }
 
         }
@@ -71,6 +89,26 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPrev
         displayPhoto(photos.get(index));
     }
 
+    public void shareOnTwitter(File selectedPhoto) {
+        String captionText = ((EditText) findViewById(R.id.etCaption)).getText().toString();
+        Uri photoUri = Uri.fromFile(selectedPhoto);
+
+        // set default twit text if caption is empty
+        if(captionText == null || captionText.isEmpty()) {
+            captionText = "COMP 7082";
+        }
+
+        final TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        // invoke Twitter sharing
+        final Intent intent = new ComposerActivity.Builder(PhotoPreviewActivity.this)
+                .session(session)
+                .image(photoUri)
+                .text(captionText)
+                .hashtags("#photogallery")
+                .createIntent();
+        startActivity(intent);
+    }
+
     private void displayPhoto(String path) {
         ImageView iv = findViewById(R.id.preview_image);
         TextView tv = findViewById(R.id.preview_image_text);
@@ -78,7 +116,6 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPrev
         try {
             final ExifInterface ei = new ExifInterface(path);
             String timestamp = ei.getAttribute(ExifInterface.TAG_DATETIME);
-
 
             if (path == null || path.equals("")) {
                 iv.setImageResource(R.mipmap.ic_launcher);

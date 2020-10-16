@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -16,6 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
 
 import com.example.photogallery.Model.PhotoModel;
 import com.example.photogallery.Presenter.ImageAdapter;
@@ -29,6 +35,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements MainView {
     public static final int SEARCH_ACTIVITY_REQUEST_CODE = 200;
+    public static final int SESSION_ACTIVITY_REQUEST_CODE = 300;
     static final int REQUEST_IMAGE_CAPTURE = 33;
     public static final int REQUEST_PHOTO_PREVIEW = 100;
 
@@ -48,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         // request permissions
         requestGPSPermission();
+        initializeTwitter();
 
         // display image gallery
         updateGridView(imageAdapter);
@@ -79,6 +87,15 @@ public class MainActivity extends AppCompatActivity implements MainView {
             @Override
             public void onClick(View v) {
                 openSearchActivity(v);
+            }
+        });
+
+        // open account window
+        Button accountButton = (Button) findViewById(R.id.btnAccount);
+        accountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSessionActivity(v);
             }
         });
     }
@@ -132,11 +149,29 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
     }
 
+    private void initializeTwitter() {
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(
+                        "CONSUMER_KEY",
+                        "CONSUMER_SECRET"
+                ))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
+    }
+
     // search button
     @Override
     public void openSearchActivity(View v) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    }
+
+    // session button
+    public void openSessionActivity(View v) {
+        Intent intent = new Intent(this, SessionActivity.class);
+        startActivityForResult(intent, SESSION_ACTIVITY_REQUEST_CODE);
     }
 
     // request permission to use GPS

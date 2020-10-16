@@ -4,10 +4,8 @@
 
     <!-- Main Page -->
     <string name="snap_button">Snap</string>
-    <string name="caption_button">Caption</string>
     <string name="search_button">Search</string>
-    <string name="left_button">Left</string>
-    <string name="right_button">Right</string>
+    <string name="account_button">Account</string>
 
     <!-- Search Page -->
     <string name="keyword_search_text">Keyword:</string>
@@ -17,7 +15,9 @@
     <string name="lng_text">Longitude:</string>
     <string name="apply_search_button">Apply Search</string>
     <string name="search_clear_button">Clear</string>
-    <string name="search_cancel_button">Cancel</string>
+
+    <!-- Photo Preview -->
     <string name="next">Next</string>
     <string name="prev">Prev</string>
+    <string name="share_button">Share</string>
 </resources>
