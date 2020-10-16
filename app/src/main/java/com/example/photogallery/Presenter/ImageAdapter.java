@@ -58,7 +58,6 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
         Bitmap b = BitmapFactory.decodeFile(this.images[position].getAbsolutePath());
         Bitmap scaledB = Bitmap.createScaledBitmap(b, 200, 200, true);
         imageView.setImageBitmap(Bitmap.createBitmap(scaledB, 0, 0, scaledB.getWidth(), scaledB.getHeight()));
@@ -72,12 +71,12 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public void updateCoordinateTags() {
-        double [] coordinates = getCoordinates();
-        for(int i = 0; i < this.images.length; i++) {
+        double[] coordinates = getCoordinates();
+        for (int i = 0; i < this.images.length; i++) {
             try {
                 String path = images[i].getAbsolutePath();
                 ExifInterface exifInterface = new ExifInterface(path);
-                if(exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE) == null || exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE) == null)  {
+                if (exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE) == null || exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE) == null) {
                     exifInterface.setAttribute(ExifInterface.TAG_GPS_LATITUDE, convertToGPS(coordinates[0]));
                     exifInterface.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertToGPS(coordinates[1]));
                     exifInterface.saveAttributes();
@@ -88,12 +87,12 @@ public class ImageAdapter extends BaseAdapter {
         }
     }
 
-    public File[] filterImages(final Date startTimestamp, final Date endTimestamp, final String keywords, final  String lat, final String lng) {
+    public File[] filterImages(final Date startTimestamp, final Date endTimestamp, final String keywords, final String lat, final String lng) {
         File[] files = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()).listFiles();
         files = Arrays.stream(files)
                 .filter(f -> acceptByTimestamp(f, startTimestamp, endTimestamp) &&
-                                acceptByKeywords(f, keywords) &&
-                                acceptByCoordinates(f, lat, lng)
+                        acceptByKeywords(f, keywords) &&
+                        acceptByCoordinates(f, lat, lng)
                 ).toArray(File[]::new);
         this.images = files;
         return files;
@@ -108,8 +107,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     private static boolean acceptByCoordinates(File f, String latitude, String longitude) {
-        if (latitude.equals("") && longitude.equals(""))
-        {
+        if (latitude.equals("") && longitude.equals("")) {
             return true;
         }
 
@@ -143,7 +141,7 @@ public class ImageAdapter extends BaseAdapter {
         int minute = (int) coordinate;
         coordinate *= 60;
         coordinate -= (minute * 60.0d);
-        int second = (int) (coordinate*1000.0d);
+        int second = (int) (coordinate * 1000.0d);
 
         sb.setLength(0);
         sb.append(degree);
