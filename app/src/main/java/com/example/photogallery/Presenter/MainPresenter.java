@@ -1,45 +1,39 @@
 package com.example.photogallery.Presenter;
 
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
-import android.util.Log;
 
-import com.example.photogallery.ImageAdapter;
-import com.example.photogallery.Model.Photos;
+
+import com.example.photogallery.Model.PhotoModel;
 import com.example.photogallery.View.MainView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.content.Context.LOCATION_SERVICE;
-
 public class MainPresenter implements IMainPresenter {
 
     public static final String PHOTO_PATHS = "photoPaths";
-    static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
 
     private final MainView mv;
-    private final Photos photos;
+    private final PhotoModel photoModel;
 
-    public MainPresenter(MainView mainView, Photos photos) {
+    public MainPresenter(MainView mainView, PhotoModel photoModel) {
         this.mv = mainView;
-        this.photos = photos;
+        this.photoModel = photoModel;
     }
 
     /* Updates the model after image capture */
     @Override
     public void handleRequestImageCapture(ImageAdapter imageAdapter) {
-        photos.setPhotoStringPaths(new Date(Long.MIN_VALUE), new Date(), "");
+        photoModel.setPhotoStringPaths(new Date(Long.MIN_VALUE), new Date(), "");
         imageAdapter.updateImages();
-        imageAdapter.updateCoordinateTags(getCoordinates());
+        imageAdapter.updateCoordinateTags();
         imageAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void handlePhotoPreviewUpdates(Intent data) {
-        photos.setPhotoStringPaths(data.getStringArrayListExtra(PHOTO_PATHS));
+        photoModel.setPhotoStringPaths(data.getStringArrayListExtra(PHOTO_PATHS));
     }
 
     @Override
@@ -61,31 +55,15 @@ public class MainPresenter implements IMainPresenter {
         imageAdapter.filterImages(startTimestamp, endTimestamp, keywords, lat, lng);
         imageAdapter.notifyDataSetChanged();
         mv.updateGridView(imageAdapter);
-        photos.setPhotoStringPaths(startTimestamp, endTimestamp, keywords);
+        photoModel.setPhotoStringPaths(startTimestamp, endTimestamp, keywords);
     }
 
     @Override
     public void handleSearchFiltersCleared(ImageAdapter imageAdapter) {
         imageAdapter.updateImages();
-        imageAdapter.updateCoordinateTags(getCoordinates());
+        imageAdapter.updateCoordinateTags();
         imageAdapter.notifyDataSetChanged();
-        photos.setPhotoStringPaths(null, null, "");
-    }
-
-    private double[] getCoordinates() {
-        try {
-            LocationManager locationManager = (LocationManager) photos.getContext().getApplicationContext().getSystemService(LOCATION_SERVICE);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            double[] coordinates = {0, 0};
-            if (location != null) {
-                coordinates[0] = location.getLatitude();
-                coordinates[1] = location.getLongitude();
-                return coordinates;
-            }
-        } catch (SecurityException e) {
-            Log.e("getLocationFailed", e.getMessage());
-        }
-        return FALLBACK_COORDINATES;
+        photoModel.setPhotoStringPaths(null, null, "");
     }
 
 }

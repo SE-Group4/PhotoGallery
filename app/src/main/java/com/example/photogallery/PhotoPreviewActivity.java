@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,12 +13,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.photogallery.Presenter.MainPresenter;
+import com.example.photogallery.View.PhotoPreviewView;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PhotoPreviewActivity extends AppCompatActivity {
+public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPreviewView {
     private int index = 0;
     private ArrayList<String> photos = null;
 

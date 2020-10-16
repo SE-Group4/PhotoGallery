@@ -1,10 +1,13 @@
-package com.example.photogallery;
+package com.example.photogallery.Presenter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,10 +19,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
+import static android.content.Context.LOCATION_SERVICE;
+
 public class ImageAdapter extends BaseAdapter {
 
     private final Context context;
     private File[] images;
+    static final double[] FALLBACK_COORDINATES = {49.220509, -123.007111};
 
     public ImageAdapter(Context context) {
         this.context = context;
@@ -60,15 +66,13 @@ public class ImageAdapter extends BaseAdapter {
         return imageView;
     }
 
-    // private helper methods
-
-    // get list of images from downloads directory
     private File[] listImages() {
         File directory = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
         return directory.listFiles();
     }
 
-    public void updateCoordinateTags(double[] coordinates) {
+    public void updateCoordinateTags() {
+        double [] coordinates = getCoordinates();
         for(int i = 0; i < this.images.length; i++) {
             try {
                 String path = images[i].getAbsolutePath();
@@ -150,4 +154,22 @@ public class ImageAdapter extends BaseAdapter {
         sb.append("/1000");
         return sb.toString();
     }
+
+
+    private double[] getCoordinates() {
+        try {
+            LocationManager locationManager = (LocationManager) context.getApplicationContext().getSystemService(LOCATION_SERVICE);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            double[] coordinates = {0, 0};
+            if (location != null) {
+                coordinates[0] = location.getLatitude();
+                coordinates[1] = location.getLongitude();
+                return coordinates;
+            }
+        } catch (SecurityException e) {
+            Log.e("getLocationFailed", e.getMessage());
+        }
+        return FALLBACK_COORDINATES;
+    }
+
 }

@@ -1,23 +1,20 @@
 package com.example.photogallery.Model;
 
-import android.content.Context;
-import android.os.Environment;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Photos {
-    private final Context context;
+public class PhotoModel {
+    private final File downloadDirectory;
     private ArrayList<String> photoStringPaths;
 
-    public Photos(Context context) {
-        this.context = context;
+    public PhotoModel(File downloadDirectory) {
+        this.downloadDirectory = downloadDirectory;
         this.setPhotoStringPaths(new Date(Long.MIN_VALUE), new Date(), "");
     }
 
-    public Context getContext() {
-        return context;
+    public File[] getImagesList() {
+        return downloadDirectory.listFiles();
     }
 
     public void setPhotoStringPaths(ArrayList<String> photoStringPaths) {
@@ -25,9 +22,8 @@ public class Photos {
     }
 
     public void setPhotoStringPaths(Date startTimestamp, Date endTimestamp, String keywords) {
-        File file = new File(context.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
         photoStringPaths = new ArrayList<>();
-        File[] fList = file.listFiles();
+        File[] fList = downloadDirectory.listFiles();
         if (fList != null) {
             for (File f : fList) {
                 if (((startTimestamp == null && endTimestamp == null) || (f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime())) && (keywords == "" || f.getPath().contains(keywords)))

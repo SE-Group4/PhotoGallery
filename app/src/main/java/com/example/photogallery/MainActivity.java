@@ -17,7 +17,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.photogallery.Model.Photos;
+import com.example.photogallery.Model.PhotoModel;
+import com.example.photogallery.Presenter.ImageAdapter;
 import com.example.photogallery.Presenter.MainPresenter;
 import com.example.photogallery.View.MainView;
 
@@ -34,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private ImageAdapter imageAdapter;
     private GridView gv;
     private Button searchButton;
-    private Photos photos;
     private MainPresenter presenter;
 
     @Override
@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-        photos = new Photos(this);
-        presenter = new MainPresenter(this, photos);
+        File downloadDirectory = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        presenter = new MainPresenter(this, new PhotoModel(downloadDirectory));
         imageAdapter = new ImageAdapter(this);
 
         // request permissions
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                     Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
                     i.putExtra("clickedImageTimestamp", "Timestamp: " + ei.getAttribute(ExifInterface.TAG_DATETIME));
                     i.putExtra("clickedImagePath", imgPath);
-                    i.putExtra("photoPaths", photos.getPhotoStringPaths());
+//                    i.putExtra("photoPaths", presenter.);
                     startActivityForResult(i, REQUEST_PHOTO_PREVIEW);
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
             if (resultCode == SearchActivity.FILTER_APPLIED) {
                 presenter.handleRequestSearchFilter(data, imageAdapter);
             } else if (resultCode == SearchActivity.FILTER_CLEARED) {
-                presenter.handleSearchFiltersCleared(imageAdapter);
+//                presenter.handleSearchFiltersCleared(imageAdapter);
             }
         }
 
@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     // referenced from activity_main.xml
+    @Override
     public void takePhoto(View v) throws IOException {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File downloadFolder = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -131,16 +132,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
     }
 
+    // search button
+    @Override
+    public void openSearchActivity(View v) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    }
+
     // request permission to use GPS
     private void requestGPSPermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 222);
         }
-    }
-
-    // search button
-    public void openSearchActivity(View v) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 }
