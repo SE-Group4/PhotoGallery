@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
             if (resultCode == SearchActivity.FILTER_APPLIED) {
                 presenter.handleRequestSearchFilter(data, imageAdapter);
             } else if (resultCode == SearchActivity.FILTER_CLEARED) {
-//                presenter.handleSearchFiltersCleared(imageAdapter);
+                presenter.handleSearchFiltersCleared(imageAdapter);
             }
         }
 
