@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.photogallery.Presenter.MainPresenter;
+import com.example.photogallery.View.PhotoPreviewView;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
@@ -23,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PhotoPreviewActivity extends AppCompatActivity {
+public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPreviewView {
     private int index = 0;
     private ArrayList<String> photos = null;
 
@@ -133,17 +134,18 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
         Intent intentResult = new Intent();
-        intentResult.putExtra(MainActivity.PHOTO_PATHS, photos);
+        intentResult.putExtra(MainPresenter.PHOTO_PATHS, photos);
         setResult(RESULT_OK, intentResult);
         finish();
     }
 
     private void updatePhoto(String path, String caption) {
         String[] attr = path.split("_");
-        String newPath = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3];
+        String newPath = attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4];
 
-        if (attr.length >= 3) {
+        if (attr.length >= 4) {
             File to = new File(newPath);
             File from = new File(path);
             from.renameTo(to);

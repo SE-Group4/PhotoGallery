@@ -1,7 +1,5 @@
 package com.example.photogallery;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.TwitterException;
+import androidx.appcompat.app.AppCompatActivity;
 
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 public class SessionActivity extends AppCompatActivity {
