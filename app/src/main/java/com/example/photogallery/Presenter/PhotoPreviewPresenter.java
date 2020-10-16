@@ -1,4 +1,5 @@
 package com.example.photogallery.Presenter;
 
-public class PhotoPreviewPresenter {
+public class PhotoPreviewPresenter implements IPhotoPreviewPresenter {
+
 }

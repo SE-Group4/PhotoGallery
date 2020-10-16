@@ -8,6 +8,7 @@ import com.example.photogallery.View.MainView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainPresenter implements IMainPresenter {
@@ -66,4 +67,8 @@ public class MainPresenter implements IMainPresenter {
         photoModel.setPhotoStringPaths(null, null, "");
     }
 
+    @Override
+    public ArrayList<String> getPhotoPaths(){
+        return photoModel.getPhotoStringPaths();
+    }
 }

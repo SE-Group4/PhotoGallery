@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                     Intent i = new Intent(getApplicationContext(), PhotoPreviewActivity.class);
                     i.putExtra("clickedImageTimestamp", "Timestamp: " + ei.getAttribute(ExifInterface.TAG_DATETIME));
                     i.putExtra("clickedImagePath", imgPath);
-//                    i.putExtra("photoPaths", presenter.);
+                    i.putExtra("photoPaths", presenter.getPhotoPaths());
                     startActivityForResult(i, REQUEST_PHOTO_PREVIEW);
                 } catch (IOException ex) {
                     ex.printStackTrace();
