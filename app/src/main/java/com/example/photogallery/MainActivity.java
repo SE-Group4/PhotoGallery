@@ -110,11 +110,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_PHOTO_PREVIEW && resultCode == RESULT_OK && data != null) {
+        if (requestCode == REQUEST_PHOTO_PREVIEW && resultCode == RESULT_OK) {
             presenter.handlePhotoPreviewUpdates(data);
         }
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             presenter.handleRequestImageCapture(imageAdapter);
         }
 
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         if (!downloadFolder.exists()) downloadFolder.mkdir();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "_caption_" + timeStamp + "_";
-        File newPhoto = File.createTempFile(imageFileName, ".jpg", downloadFolder);
+        File newPhoto = new File(downloadFolder, imageFileName + ".jpg");
         if (newPhoto != null) {
             Uri photoURI = FileProvider.getUriForFile(this, "com.example.photogallery.fileprovider", newPhoto);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI); // FIXME: uncomment when saving images. NOTE: sets Bitmap data to null
