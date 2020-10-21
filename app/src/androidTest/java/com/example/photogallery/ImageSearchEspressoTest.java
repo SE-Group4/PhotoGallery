@@ -8,6 +8,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.example.photogallery.View.MainActivity;
+
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;

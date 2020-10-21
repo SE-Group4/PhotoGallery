@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.photogallery.Presenter.MainPresenter;
-import com.example.photogallery.View.PhotoPreviewView;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
@@ -24,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPreviewView {
+public class PhotoPreviewActivity extends AppCompatActivity {
     private int index = 0;
     private ArrayList<String> photos = null;
 
@@ -136,7 +135,7 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPrev
     public void onBackPressed() {
         updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
         Intent intentResult = new Intent();
-        intentResult.putExtra(MainPresenter.PHOTO_PATHS, photos);
+       // intentResult.putExtra(MainPresenter.PHOTO_PATHS, photos);
         setResult(RESULT_OK, intentResult);
         finish();
     }
